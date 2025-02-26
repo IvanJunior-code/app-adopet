@@ -1,0 +1,4 @@
+key_name   = "key_name"
+path_key   = "~/.ssh/"
+public_key = "public_key"
+postgres_password = "password"
