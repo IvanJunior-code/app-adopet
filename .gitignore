@@ -73,3 +73,6 @@ terraform.rc
 
 # Ignore .terraform.lock.hcl file
 .terraform.lock.hcl
+
+# Ignore infracost
+.infracost
