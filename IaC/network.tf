@@ -104,7 +104,7 @@ resource "aws_security_group" "sg_rds" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"]
+    cidr_blocks = ["${aws_instance.ec2_adopet.private_ip}/32"]
   }
 
   egress {
