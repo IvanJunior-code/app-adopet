@@ -11,5 +11,5 @@ variable "public_key" {
 }
 
 variable "postgres_password" {
-  
+
 }
