@@ -5,22 +5,28 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames = true
 }
 
-resource "aws_subnet" "public_subnet1" {
+resource "aws_subnet" "public_subnet_ec2" {
   vpc_id                  = aws_vpc.vpc.id
-  availability_zone       = "us-east-1a"
+  availability_zone       = "${local.region}a"
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
 }
 
-resource "aws_subnet" "public_subnet2" {
+resource "aws_subnet" "private_subnet_rds_1" {
   vpc_id            = aws_vpc.vpc.id
-  availability_zone = "us-east-1b"
+  availability_zone = "${local.region}b"
   cidr_block        = "10.0.2.0/24"
+}
+
+resource "aws_subnet" "private_subnet_rds_2" {
+  vpc_id            = aws_vpc.vpc.id
+  availability_zone = "${local.region}c"
+  cidr_block        = "10.0.3.0/24"
 }
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "rds_subnet"
-  subnet_ids = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
+  subnet_ids = [aws_subnet.private_subnet_rds_1.id, aws_subnet.private_subnet_rds_2.id]
 
   tags = {
     Name = "DB subnet group"
@@ -49,72 +55,72 @@ resource "aws_route_table" "route_table" {
 }
 
 resource "aws_route_table_association" "rt_association" {
-  subnet_id      = aws_subnet.public_subnet1.id
+  subnet_id      = aws_subnet.public_subnet_ec2.id
   route_table_id = aws_route_table.route_table.id
 }
 
 resource "aws_security_group" "sg_ssh" {
   vpc_id = aws_vpc.vpc.id
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = {
     Name = "Security Group SSH"
   }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "ingress_ssh_rule" {
+  security_group_id = aws_security_group.sg_ssh.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 22
+  ip_protocol       = "tcp"
+  to_port           = 22
+}
+
+resource "aws_vpc_security_group_egress_rule" "egress_ssh_rule" {
+  security_group_id = aws_security_group.sg_ssh.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
 resource "aws_security_group" "sg_dns" {
   vpc_id = aws_vpc.vpc.id
-
-  ingress {
-    from_port   = 53
-    to_port     = 53
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   tags = {
     Name = "Security Group DNS"
   }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "ingress_dns_rule" {
+  security_group_id = aws_security_group.sg_dns.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 53
+  ip_protocol       = "tcp"
+  to_port           = 53
+}
+
+resource "aws_vpc_security_group_egress_rule" "egress_dns_rule" {
+  security_group_id = aws_security_group.sg_dns.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
 resource "aws_security_group" "sg_rds" {
   vpc_id = aws_vpc.vpc.id
-
-  ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["${aws_instance.ec2_adopet.private_ip}/32"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   tags = {
     Name = "Security Group RDS"
   }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ingress_rds_rule" {
+  security_group_id = aws_security_group.sg_rds.id
+  cidr_ipv4         = aws_subnet.public_subnet_ec2.cidr_block
+  from_port         = 5432
+  ip_protocol       = "tcp"
+  to_port           = 5432
+}
+
+resource "aws_vpc_security_group_egress_rule" "egress_rds_rule" {
+  security_group_id = aws_security_group.sg_rds.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
 }
