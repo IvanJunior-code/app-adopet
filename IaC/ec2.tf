@@ -1,11 +1,12 @@
 resource "aws_instance" "ec2_adopet" {
-  ami             = local.ami_id
-  instance_type   = local.instance_type
-  key_name        = var.key_name
-  subnet_id       = aws_subnet.public_subnet1.id
-  security_groups = [aws_security_group.sg_ssh.id]
+  ami           = local.ami_id
+  instance_type = local.instance_type
+  key_name      = var.key_name
+  subnet_id     = aws_subnet.public_subnet_ec2.id
+  # security_groups = [aws_security_group.sg_ssh.id] # security_groups is used for default VPC only
+  vpc_security_group_ids = [aws_security_group.sg_ssh.id]
 
-  user_data = <<-EOF
+  user_data = base64encode(<<-EOF
                 #!/bin/bash
                 LOG_FILE="/var/log/user_data.log"
                 if [ ! -f /tmp/first_setup_done ]; then
@@ -18,6 +19,7 @@ resource "aws_instance" "ec2_adopet" {
                 #npm run build
                 #npm start:prod
             EOF
+  )
 
   tags = {
     Name = "EC2"
