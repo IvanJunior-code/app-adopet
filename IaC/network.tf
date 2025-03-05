@@ -1,5 +1,5 @@
 resource "aws_vpc" "vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = local.vpc_cidr
 
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -8,20 +8,20 @@ resource "aws_vpc" "vpc" {
 resource "aws_subnet" "public_subnet_ec2" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = "${local.region}a"
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = local.subnet_public_cidr
   map_public_ip_on_launch = true
 }
 
 resource "aws_subnet" "private_subnet_rds_1" {
   vpc_id            = aws_vpc.vpc.id
   availability_zone = "${local.region}b"
-  cidr_block        = "10.0.2.0/24"
+  cidr_block        = local.subnet_private1_cidr
 }
 
 resource "aws_subnet" "private_subnet_rds_2" {
   vpc_id            = aws_vpc.vpc.id
   availability_zone = "${local.region}c"
-  cidr_block        = "10.0.3.0/24"
+  cidr_block        = local.subnet_private2_cidr
 }
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
