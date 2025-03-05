@@ -6,4 +6,11 @@ locals {
   subnet_public_cidr  = "10.0.1.0/24"
   subnet_private1_cidr  = "10.0.2.0/24"
   subnet_private2_cidr = "10.0.3.0/24"
+
+  management_tags = {
+    CreatedBy   = "Terraform"
+    Environment = "Test"
+    Project     = "Escalabilidade e Monitoramento"
+    Owner       = "Ivan"
+  }
 }
