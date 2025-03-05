@@ -4,7 +4,7 @@ resource "aws_instance" "ec2_adopet" {
   key_name      = var.key_name
   subnet_id     = aws_subnet.public_subnet_ec2.id
   # security_groups = [aws_security_group.sg_ssh.id] # security_groups is used for default VPC only
-  vpc_security_group_ids = [aws_security_group.sg_ssh.id]
+  vpc_security_group_ids = [aws_security_group.sg_ec2.id]
 
   user_data = base64encode(<<-EOF
                 #!/bin/bash

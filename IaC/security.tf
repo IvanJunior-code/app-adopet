@@ -1,4 +1,4 @@
-resource "aws_security_group" "sg_ssh" {
+resource "aws_security_group" "sg_ec2" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
@@ -7,7 +7,7 @@ resource "aws_security_group" "sg_ssh" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "ingress_ssh_rule" {
-  security_group_id = aws_security_group.sg_ssh.id
+  security_group_id = aws_security_group.sg_ec2.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 22
   ip_protocol       = "tcp"
@@ -18,26 +18,8 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_ssh_rule" {
   }
 }
 
-resource "aws_vpc_security_group_egress_rule" "egress_rule" {
-  security_group_id = aws_security_group.sg_ssh.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1"
-
-  tags = {
-    Name = "Egress Rule"
-  }
-}
-
-resource "aws_security_group" "sg_dns" {
-  vpc_id = aws_vpc.vpc.id
-
-  tags = {
-    Name = "Security Group DNS"
-  }
-}
-
 resource "aws_vpc_security_group_ingress_rule" "ingress_dns_rule" {
-  security_group_id = aws_security_group.sg_dns.id
+  security_group_id = aws_security_group.sg_ec2.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 53
   ip_protocol       = "tcp"
@@ -45,6 +27,16 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_dns_rule" {
 
   tags = {
     Name = "Security Group Ingress SSH Rule"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "egress_rule" {
+  security_group_id = aws_security_group.sg_ec2.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+
+  tags = {
+    Name = "Egress Rule"
   }
 }
 
