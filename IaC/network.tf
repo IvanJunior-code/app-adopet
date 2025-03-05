@@ -3,6 +3,10 @@ resource "aws_vpc" "vpc" {
 
   enable_dns_support   = true
   enable_dns_hostnames = true
+
+  tags = {
+    Name = "VPC"
+  }
 }
 
 resource "aws_subnet" "public_subnet_ec2" {
@@ -10,18 +14,30 @@ resource "aws_subnet" "public_subnet_ec2" {
   availability_zone       = "${local.region}a"
   cidr_block              = local.subnet_public_cidr
   map_public_ip_on_launch = true
+
+  tags = {
+    Name = "Public Subnet EC2"
+  }
 }
 
 resource "aws_subnet" "private_subnet_rds_1" {
   vpc_id            = aws_vpc.vpc.id
   availability_zone = "${local.region}b"
   cidr_block        = local.subnet_private1_cidr
+
+  tags = {
+    Name = "Private Subnet RDS 1"
+  }
 }
 
 resource "aws_subnet" "private_subnet_rds_2" {
   vpc_id            = aws_vpc.vpc.id
   availability_zone = "${local.region}c"
   cidr_block        = local.subnet_private2_cidr
+
+  tags = {
+    Name = "Private Subnet RDS 2"
+  }
 }
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
@@ -29,7 +45,7 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   subnet_ids = [aws_subnet.private_subnet_rds_1.id, aws_subnet.private_subnet_rds_2.id]
 
   tags = {
-    Name = "DB subnet group"
+    Name = "DB Subnet Group"
   }
 }
 
