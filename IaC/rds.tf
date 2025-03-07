@@ -1,6 +1,6 @@
 resource "aws_db_instance" "rds_postgres" {
   allocated_storage      = 10
-  db_name                = "postgres"
+  db_name                = "mydatabase"
   engine                 = "postgres"
   port                   = 5432
   engine_version         = "16.5" # aws rds describe-db-engine-versions --default-only --engine postgres
