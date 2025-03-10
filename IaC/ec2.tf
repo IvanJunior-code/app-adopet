@@ -27,11 +27,8 @@ resource "aws_instance" "ec2_adopet" {
                     chmod 600 /home/ubuntu/sql/adopet-dump.sql
                     chown ubuntu:ubuntu /home/ubuntu/sql/adopet-dump.sql
 
-                    # Recuperando senha para acesso ao banco de dados
-                    PASSWORD=$(aws secretsmanager get-secret-value --secret-id adopet-db-password --query SecretString --output text | jq -r .password)
-
                     # Restaurando o banco com o arquivo dump .sql
-                    PGPASSWORD=$PASSWORD pg_restore -v -h ${aws_db_instance.rds_postgres.address} -p ${aws_db_instance.rds_postgres.port} -U ${aws_db_instance.rds_postgres.username} -d ${aws_db_instance.rds_postgres.db_name} /home/ubuntu/sql/adopet-dump.sql
+                    PGPASSWORD=$(aws secretsmanager get-secret-value --secret-id adopet-db-password --query SecretString --output text | jq -r .password) pg_restore -v -h ${aws_db_instance.rds_postgres.address} -p ${aws_db_instance.rds_postgres.port} -U ${aws_db_instance.rds_postgres.username} -d ${aws_db_instance.rds_postgres.db_name} /home/ubuntu/sql/adopet-dump.sql 2>/dev/null
 
                     # Removendo o AWS CLI
                     sudo rm -rf /usr/local/aws-cli
