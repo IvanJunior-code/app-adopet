@@ -5,8 +5,8 @@ resource "aws_db_instance" "rds_postgres" {
   port                   = 5432
   engine_version         = "16.5" # aws rds describe-db-engine-versions --default-only --engine postgres
   instance_class         = "db.t3.micro"
-  username               = "postgres"
-  password               = var.postgres_password
+  username               = var.postgres_username
+  password               = var.postgres_credentials.password
   parameter_group_name   = "default.postgres16"
   skip_final_snapshot    = true
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
