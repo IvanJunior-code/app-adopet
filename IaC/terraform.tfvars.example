@@ -1,4 +1,8 @@
 key_name   = "key_name"
 path_key   = "~/.ssh/"
 public_key = "public_key"
-postgres_password = "password"
+postgres_username = "username"
+postgres_credentials = {
+  #  "username" = "postgres" # for set username with password as a map
+  "password" = "password"
+}
