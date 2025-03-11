@@ -23,9 +23,15 @@ resource "aws_instance" "ec2_adopet" {
 
                     # Baixando e configurando o arquivo dump sql
                     mkdir -p /home/ubuntu/sql/
-                    aws s3 cp s3://bucket-adopet-dump-sql/adopet-dump /home/ubuntu/sql/adopet-dump.sql
+                    aws s3 cp s3://bucket-adopet/adopet-dump /home/ubuntu/sql/adopet-dump.sql
                     chmod 600 /home/ubuntu/sql/adopet-dump.sql
                     chown ubuntu:ubuntu /home/ubuntu/sql/adopet-dump.sql
+
+                    # Baixando e configurando o app
+                    mkdir -p /home/ubuntu/app/
+                    aws s3 cp s3://bucket-adopet/adopet-app /home/ubuntu/app/app.tar
+                    chmod 600 /home/ubuntu/app/
+                    chown ubuntu:ubuntu /home/ubuntu/app/
 
                     # Restaurando o banco com o arquivo dump .sql
                     PGPASSWORD=$(aws secretsmanager get-secret-value --secret-id adopet-db-password --query SecretString --output text | jq -r .password) pg_restore -v -h ${aws_db_instance.rds_postgres.address} -p ${aws_db_instance.rds_postgres.port} -U ${aws_db_instance.rds_postgres.username} -d ${aws_db_instance.rds_postgres.db_name} /home/ubuntu/sql/adopet-dump.sql 2>/dev/null
@@ -41,6 +47,13 @@ resource "aws_instance" "ec2_adopet" {
 
                     # Criando arquivo de finalização da instalação/configuração
                     touch /tmp/first_setup_done
+
+                    # Executando a aplicação
+                    cd /home/ubuntu/app/
+                    npm install
+                    npm run build
+                    npm start:prod
+
                   } >> $LOG_FILE 2>&1
                 fi
                 #npm install
@@ -49,7 +62,7 @@ resource "aws_instance" "ec2_adopet" {
             EOF
   )
 
-  depends_on = [aws_db_instance.rds_postgres, aws_iam_policy_attachment.iam_secretmanager_policy_attachment, aws_iam_policy_attachment.iam_s3_read_policy_attachment]
+  depends_on = [aws_db_instance.rds_postgres, aws_iam_policy_attachment.iam_secretmanager_policy_attachment, aws_iam_policy_attachment.iam_s3_read_policy_attachment, aws_s3_object.object-app]
 
   tags = {
     Name = "EC2"
