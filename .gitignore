@@ -76,3 +76,6 @@ terraform.rc
 
 # Ignore infracost
 .infracost
+
+# Ignore app.tar
+/app-tar
