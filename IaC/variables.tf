@@ -10,6 +10,11 @@ variable "public_key" {
   sensitive = true
 }
 
-variable "postgres_password" {
+variable "postgres_username" {
+
+}
+
+variable "postgres_credentials" {
   sensitive = true
+  type      = map(string)
 }
