@@ -32,8 +32,8 @@ resource "aws_instance" "ec2_adopet" {
                     aws s3 cp s3://bucket-adopet/adopet-app /home/ubuntu/app/app.tar
                     tar -xf /home/ubuntu/app/app.tar -C /home/ubuntu/app/
                     rm -rf /home/ubuntu/app/app.tar
-                    chmod 600 /home/ubuntu/app/
-                    chown ubuntu:ubuntu /home/ubuntu/app/
+                    chmod 600 /home/ubuntu/app/*
+                    chown ubuntu:ubuntu /home/ubuntu/app/*
 
                     # Restaurando o banco com o arquivo dump .sql
                     PGPASSWORD=$(aws secretsmanager get-secret-value --secret-id adopet-db-password --query SecretString --output text | jq -r .password) pg_restore -v -h ${aws_db_instance.rds_postgres.address} -p ${aws_db_instance.rds_postgres.port} -U ${aws_db_instance.rds_postgres.username} -d ${aws_db_instance.rds_postgres.db_name} /home/ubuntu/sql/adopet-dump.sql 2>/dev/null
