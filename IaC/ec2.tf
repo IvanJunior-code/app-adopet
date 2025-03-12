@@ -30,6 +30,8 @@ resource "aws_instance" "ec2_adopet" {
                     # Baixando e configurando o app
                     mkdir -p /home/ubuntu/app/
                     aws s3 cp s3://bucket-adopet/adopet-app /home/ubuntu/app/app.tar
+                    tar -xf /home/ubuntu/app/app.tar -C /home/ubuntu/app/
+                    rm -rf /home/ubuntu/app/app.tar
                     chmod 600 /home/ubuntu/app/
                     chown ubuntu:ubuntu /home/ubuntu/app/
 
