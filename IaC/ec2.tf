@@ -38,6 +38,13 @@ resource "aws_instance" "ec2_adopet" {
                     # Restaurando o banco com o arquivo dump .sql
                     PGPASSWORD=$(aws secretsmanager get-secret-value --secret-id adopet-db-password --query SecretString --output text | jq -r .password) pg_restore -v -h ${aws_db_instance.rds_postgres.address} -p ${aws_db_instance.rds_postgres.port} -U ${aws_db_instance.rds_postgres.username} -d ${aws_db_instance.rds_postgres.db_name} /home/ubuntu/sql/adopet-dump.sql 2>/dev/null
 
+                    # Editando arquivo .env para conexão do app com o banco
+                    sed -i 's/DB_HOST=db_host_value/DB_HOST=${aws_db_instance.rds_postgres.address}/' /home/ubuntu/app/.env
+                    sed -i 's/DB_PORT=db_port_value/DB_PORT=${aws_db_instance.rds_postgres.port}/' /home/ubuntu/app/.env
+                    sed -i 's/DB_USERNAME=db_username_value/DB_USERNAME=${aws_db_instance.rds_postgres.username}/' /home/ubuntu/app/.env
+                    sed -i 's/DB_PASSWORD=db_password_value/DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id adopet-db-password --query SecretString --output text | jq -r .password)/' /home/ubuntu/app/.env
+                    sed -i 's/DB_NAME=db_name_value/DB_NAME=${aws_db_instance.rds_postgres.db_name}/' /home/ubuntu/app/.env
+
                     # Removendo o AWS CLI
                     sudo rm -rf /usr/local/aws-cli
                     sudo rm -rf /usr/bin/aws
@@ -52,9 +59,9 @@ resource "aws_instance" "ec2_adopet" {
 
                     # Executando a aplicação
                     cd /home/ubuntu/app/
-                    npm install
+                    npm install --force
                     npm run build
-                    npm start:prod
+                    npm run start:prod
 
                   } >> $LOG_FILE 2>&1
                 fi
