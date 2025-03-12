@@ -7,7 +7,7 @@ resource "null_resource" "app_tar" {
   provisioner "local-exec" {
     command = <<EOT
         mkdir -p ../app-tar
-        tar -cf ../app-tar/app.tar ../src ../package*.json ../tsconfig*.json
+        tar -cf ../app-tar/app.tar ../src ../package*.json ../tsconfig*.json ../.env
     EOT
   }
 }
