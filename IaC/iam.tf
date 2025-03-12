@@ -34,8 +34,8 @@ resource "aws_iam_policy" "s3_read_policy" {
       Effect = "Allow"
       Action = ["s3:GetObject", "s3:ListBucket"]
       Resource = [
-        aws_s3_bucket.bucket.arn,
-        "${aws_s3_bucket.bucket.arn}/*"
+        aws_s3_bucket.bucket-adopet.arn,
+        "${aws_s3_bucket.bucket-adopet.arn}/*"
       ]
     }]
   })
