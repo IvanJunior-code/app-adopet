@@ -14,6 +14,7 @@ resource "aws_ssm_document" "ssm_initialize_adopet" {
             "chmod 644 /etc/systemd/system/adopet-backend.service",
             "systemctl daemon-reload",
             "systemctl enable adopet-backend.service",
+            "while [ ! -f /tmp/first_setup_done ]; do sleep 1; done",
             "systemctl start adopet-backend.service"
           ]
         }
