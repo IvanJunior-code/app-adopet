@@ -42,7 +42,7 @@ resource "aws_instance" "ec2_adopet" {
                     sed -i 's/DB_HOST=db_host_value/DB_HOST=${aws_db_instance.rds_postgres.address}/' /home/ubuntu/app/.env
                     sed -i 's/DB_PORT=db_port_value/DB_PORT=${aws_db_instance.rds_postgres.port}/' /home/ubuntu/app/.env
                     sed -i 's/DB_USERNAME=db_username_value/DB_USERNAME=${aws_db_instance.rds_postgres.username}/' /home/ubuntu/app/.env
-                    sed -i 's/DB_PASSWORD=db_password_value/DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id adopet-db-password --query SecretString --output text | jq -r .password)/' /home/ubuntu/app/.env
+                    sed -i "s/DB_PASSWORD=db_password_value/DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id adopet-db-password --query SecretString --output text | jq -r .password)/" /home/ubuntu/app/.env
                     sed -i 's/DB_NAME=db_name_value/DB_NAME=${aws_db_instance.rds_postgres.db_name}/' /home/ubuntu/app/.env
 
                     # Removendo o AWS CLI
