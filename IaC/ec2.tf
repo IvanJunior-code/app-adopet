@@ -61,7 +61,7 @@ resource "aws_instance" "ec2_adopet" {
                     cd /home/ubuntu/app/
                     npm install --force
                     npm run build
-                    npm run start:prod
+                    #npm run start:prod
 
                   } >> $LOG_FILE 2>&1
                 fi
