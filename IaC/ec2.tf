@@ -54,20 +54,16 @@ resource "aws_instance" "ec2_adopet" {
                     shred -u /home/ubuntu/sql/adopet-dump.sql
                     sudo rm -rf /home/ubuntu/sql/
 
-                    # Criando arquivo de finalização da instalação/configuração
-                    touch /tmp/first_setup_done
-
-                    # Executando a aplicação
+                    # Instalando e preparando a aplicação
                     cd /home/ubuntu/app/
                     npm install --force
                     npm run build
-                    #npm run start:prod
+
+                    # Criando arquivo de finalização de toda instalação/configuração
+                    touch /tmp/first_setup_done
 
                   } >> $LOG_FILE 2>&1
                 fi
-                #npm install
-                #npm run build
-                #npm start:prod
             EOF
   )
 
