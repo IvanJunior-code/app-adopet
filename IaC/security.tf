@@ -107,3 +107,31 @@ resource "aws_vpc_security_group_egress_rule" "egress_rds_rule" {
     Name = "Egress RDS Rule"
   }
 }
+
+resource "aws_security_group" "lb_sg" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "Security Group Load Balancer"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ingress_lb_rule" {
+  security_group_id = aws_security_group.lb_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
+
+  tags = {
+    Name = "Ingress Load Balancer Rule"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "egress_lb_rule" {
+  security_group_id = aws_security_group.lb_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
+}
