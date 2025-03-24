@@ -74,3 +74,23 @@ resource "aws_route_table_association" "rt_association" {
   subnet_id      = aws_subnet.public_subnet_ec2.id
   route_table_id = aws_route_table.route_table.id
 }
+
+resource "aws_subnet" "public_subnet_lb1" {
+  vpc_id            = aws_vpc.vpc.id
+  availability_zone = "${local.region}d"
+  cidr_block        = local.subnet_public_lb1_cidr
+
+  tags = {
+    Name = "Public Subnet Load Balancer 1"
+  }
+}
+
+resource "aws_subnet" "public_subnet_lb2" {
+  vpc_id            = aws_vpc.vpc.id
+  availability_zone = "${local.region}e"
+  cidr_block        = local.subnet_public_lb2_cidr
+
+  tags = {
+    Name = "Public Subnet Load Balancer 2"
+  }
+}
