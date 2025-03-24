@@ -9,3 +9,7 @@ output "connections_postgres_string" {
 output "teste" {
   value = "http://${aws_instance.ec2_adopet.public_ip}:${aws_vpc_security_group_ingress_rule.ingress_local_dev_rule.from_port}/adotante"
 }
+
+output "lb_dns_name" {
+  value = aws_lb.alb_adopet.dns_name
+}
