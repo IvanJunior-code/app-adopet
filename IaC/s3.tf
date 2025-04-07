@@ -16,7 +16,7 @@ resource "aws_s3_object" "object-dump-sql" {
   }
 }
 
-resource "aws_s3_object" "object-app" {
+resource "aws_s3_object" "object_app_tar" {
   bucket = aws_s3_bucket.bucket-adopet.bucket
   key    = "adopet-app"
   source = "../app-tar/app.tar"
