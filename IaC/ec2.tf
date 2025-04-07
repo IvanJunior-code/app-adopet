@@ -13,14 +13,8 @@ resource "aws_instance" "ec2_adopet" {
                 LOG_FILE="/var/log/user_data.log"
                 if [ ! -f /tmp/first_setup_done ]; then
                   {
-                    # Atualizar repositórios
-                    sudo apt-get update
-
-                    # Corrigir possíveis problemas de dependências
-                    sudo apt --fix-broken install -y
-
                     # Instalação do nodejs, npm, postgres-client, unzip e jq
-                    sudo apt-get install nodejs npm postgresql-client-16 unzip jq -y
+                    sudo apt-get update && sudo apt-get install nodejs npm postgresql-client-16 unzip jq -y
 
                     # Instalação da AWS CLI
                     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -73,7 +67,11 @@ resource "aws_instance" "ec2_adopet" {
             EOF
   )
 
-  depends_on = [aws_db_instance.rds_postgres, aws_iam_policy_attachment.iam_secretmanager_policy_attachment, aws_iam_policy_attachment.iam_s3_read_policy_attachment, aws_s3_object.object-app]
+  depends_on = [aws_db_instance.rds_postgres,
+    aws_iam_policy_attachment.iam_secretmanager_policy_attachment,
+    aws_iam_policy_attachment.iam_s3_read_policy_attachment,
+    aws_s3_object.object_app_tar
+  ]
 
   tags = {
     Name = "EC2"
