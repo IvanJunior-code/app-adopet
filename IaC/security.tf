@@ -26,7 +26,7 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_dns_rule" {
   to_port           = 53
 
   tags = {
-    Name = "Security Group Ingress SSH Rule"
+    Name = "Ingress DNS Rule"
   }
 }
 
@@ -86,7 +86,7 @@ resource "aws_security_group" "sg_rds" {
 
 resource "aws_vpc_security_group_ingress_rule" "ingress_rds_rule" {
   security_group_id = aws_security_group.sg_rds.id
-  cidr_ipv4         = aws_subnet.public_subnet_ec2.cidr_block
+  cidr_ipv4         = aws_vpc.vpc.cidr_block
   from_port         = 5432
   ip_protocol       = "tcp"
   to_port           = 5432
@@ -98,7 +98,7 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_rds_rule" {
 
 resource "aws_vpc_security_group_egress_rule" "egress_rds_rule" {
   security_group_id = aws_security_group.sg_rds.id
-  cidr_ipv4         = aws_subnet.public_subnet_ec2.cidr_block
+  cidr_ipv4         = aws_vpc.vpc.cidr_block
   from_port         = 5432
   ip_protocol       = "tcp"
   to_port           = 5432
@@ -124,14 +124,16 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_lb_rule" {
   to_port           = 80
 
   tags = {
-    Name = "Ingress Load Balancer Rule"
+    Name = "Ingress Load Balancer HTTP Rule"
   }
 }
 
 resource "aws_vpc_security_group_egress_rule" "egress_lb_rule" {
   security_group_id = aws_security_group.lb_sg.id
   cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 80
-  ip_protocol       = "tcp"
-  to_port           = 80
+  ip_protocol       = "-1"
+
+  tags = {
+    Name = "Egress Load Balancer Rule"
+  }
 }
