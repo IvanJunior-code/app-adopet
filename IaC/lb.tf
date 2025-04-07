@@ -49,7 +49,7 @@ resource "aws_launch_configuration" "launch_configuration_adopet" {
   name_prefix     = "launch_configuration"
   image_id        = data.aws_ami.data_ami.id
   instance_type   = local.instance_type
-  security_groups = [aws_security_group.sg_ec2.id]
+  security_groups = [aws_security_group.lb_sg.id]
 
   lifecycle {
     create_before_destroy = true
