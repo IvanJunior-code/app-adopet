@@ -22,6 +22,10 @@ resource "aws_lb_target_group" "lb_target" {
     enabled = true
     path    = "/adotante"
   }
+
+  tags = {
+    Name = "Target Group"
+  }
 }
 
 resource "aws_lb_listener" "lb_listener" {
@@ -45,28 +49,38 @@ data "aws_ami" "data_ami" {
   }
 }
 
-resource "aws_launch_configuration" "launch_configuration_adopet" {
-  name_prefix     = "launch_configuration"
-  image_id        = data.aws_ami.data_ami.id
-  instance_type   = local.instance_type
-  security_groups = [aws_security_group.lb_sg.id]
+resource "aws_launch_template" "launch_template_adopet" {
+  name          = "launch_template_adopet"
+  image_id      = data.aws_ami.data_ami.id
+  instance_type = local.instance_type
+  #security_group_names = [aws_security_group.lb_sg.name]  
+  vpc_security_group_ids = [aws_security_group.instances_sg.id]
 
-  lifecycle {
-    create_before_destroy = true
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "EC2-${local.management_tags.Environment}-${timestamp()}"
+    }
+  }
+
+  tags = {
+    Name = "Machine ${local.management_tags.Environment}"
   }
 }
 
 resource "aws_autoscaling_group" "autoscaling" {
-  name                 = "autoscaling"
-  max_size             = 3
-  min_size             = 1
-  desired_capacity     = 1
-  force_delete         = true
-  launch_configuration = aws_launch_configuration.launch_configuration_adopet.name
-  vpc_zone_identifier  = [aws_subnet.public_subnet_lb1.id, aws_subnet.public_subnet_lb2.id]
-}
+  name             = "autoscaling"
+  max_size         = 3
+  min_size         = 1
+  desired_capacity = 1
+  vpc_zone_identifier = [aws_subnet.public_subnet_lb1.id, aws_subnet.public_subnet_lb2.id]
+  force_delete        = true
 
-resource "aws_autoscaling_attachment" "autoscaling_attachment" {
-  autoscaling_group_name = aws_autoscaling_group.autoscaling.id
-  lb_target_group_arn    = aws_lb_target_group.lb_target.arn
+  launch_template {
+    id      = aws_launch_template.launch_template_adopet.id
+    version = "$Latest"
+  }
+
+  target_group_arns = [aws_lb_target_group.lb_target.arn]
 }
