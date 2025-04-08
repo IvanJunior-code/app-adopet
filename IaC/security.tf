@@ -137,3 +137,33 @@ resource "aws_vpc_security_group_egress_rule" "egress_lb_rule" {
     Name = "Egress Load Balancer Rule"
   }
 }
+
+resource "aws_security_group" "instances_sg" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "Security Group Instances"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ingress_instances_for_lb_rule" {
+  security_group_id = aws_security_group.instances_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 3000
+  ip_protocol       = "tcp"
+  to_port           = 3000
+
+  tags = {
+    Name = "Ingress Rule Instances for Load Balancer"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "egress_instances_for_lb_rule" {
+  security_group_id = aws_security_group.instances_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+
+  tags = {
+    Name = "Egress Rule Instances for Load Balancer"
+  }
+}
