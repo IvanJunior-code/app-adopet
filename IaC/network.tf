@@ -87,10 +87,20 @@ resource "aws_subnet" "public_subnet_lb1" {
 
 resource "aws_subnet" "public_subnet_lb2" {
   vpc_id            = aws_vpc.vpc.id
-  availability_zone = "${local.region}e"
+  availability_zone = "${local.region}f"
   cidr_block        = local.subnet_public_lb2_cidr
 
   tags = {
     Name = "Public Subnet Load Balancer 2"
   }
+}
+
+resource "aws_route_table_association" "rt_association_lb1" {
+  subnet_id      = aws_subnet.public_subnet_lb1.id
+  route_table_id = aws_route_table.route_table.id
+}
+
+resource "aws_route_table_association" "rt_association_lb2" {
+  subnet_id      = aws_subnet.public_subnet_lb2.id
+  route_table_id = aws_route_table.route_table.id
 }
