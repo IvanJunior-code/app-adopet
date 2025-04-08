@@ -1,5 +1,5 @@
 resource "aws_ssm_document" "ssm_initialize_adopet" {
-  name          = "adopet-initialize"
+  name          = "ssm_initialize_adopet"
   document_type = "Command"
   content = jsonencode({
     schemaVersion = "2.2"
