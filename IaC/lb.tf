@@ -23,6 +23,11 @@ resource "aws_lb_target_group" "lb_target" {
     path    = "/adotante"
   }
 
+  stickiness {
+    enabled = true
+    type = "lb_cookie"
+  }
+
   tags = {
     Name = "Target Group"
   }
