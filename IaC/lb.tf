@@ -26,6 +26,7 @@ resource "aws_lb_target_group" "lb_target" {
   stickiness {
     enabled = true
     type = "lb_cookie"
+    cookie_duration = 43200 # Last half a day
   }
 
   tags = {
